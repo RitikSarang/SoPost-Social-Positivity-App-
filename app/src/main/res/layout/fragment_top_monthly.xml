@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TopMonthlyFragment">
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/topusers_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        tools:listitem="@layout/top_user_item_layout" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="Top Ranking List" />
+
+</FrameLayout>

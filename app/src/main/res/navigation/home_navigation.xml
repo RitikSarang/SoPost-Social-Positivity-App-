@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_navigation"
+    app:startDestination="@id/navhomeFragment">
+
+    <fragment
+        android:id="@+id/navhomeFragment"
+        android:name="com.example.sopost.fragment.HomeFragment"
+        android:label="SoPost"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navhomeFragment_to_postBottomSheetFragment"
+            app:destination="@id/postBottomSheetFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.sopost.fragment.NotificationFragment"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.sopost.fragment.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/favFragment"
+        android:name="com.example.sopost.fragment.FavFragment"
+        android:label="Favourite"
+        tools:layout="@layout/fragment_fav" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.sopost.fragment.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.sopost.fragment.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_signUpFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.sopost.fragment.EditProfileFragment"
+        android:label="fragment_edit_profile"
+        tools:layout="@layout/fragment_edit_profile" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.sopost.fragment.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/followerContainerFragment"
+        android:name="com.example.sopost.FollowerContainerFragment"
+        android:label="fragment_follower_container"
+        tools:layout="@layout/fragment_follower_container" />
+    <fragment
+        android:id="@+id/othersProfileFragment"
+        android:name="com.example.sopost.OthersProfileFragment"
+        android:label="fragment_others_profile"
+        tools:layout="@layout/fragment_others_profile" />
+    <dialog
+        android:id="@+id/profileBottomSheetFragment"
+        android:name="com.example.sopost.ProfileBottomSheetFragment"
+        android:label="fragment_profile_bottom_sheet"
+        tools:layout="@layout/fragment_profile_bottom_sheet" />
+    <fragment
+        android:id="@+id/addPostFragment"
+        android:name="com.example.sopost.fragment.AddPostFragment"
+        android:label="fragment_add_post"
+        tools:layout="@layout/fragment_add_post" />
+    <dialog
+        android:id="@+id/postBottomSheetFragment"
+        android:name="com.example.sopost.PostBottomSheetFragment"
+        android:label="fragment_post_bottom_sheet"
+        tools:layout="@layout/fragment_post_bottom_sheet" >
+        <argument
+            android:name="postID"
+            app:argType="string" />
+    </dialog>
+    <fragment
+        android:id="@+id/topMonthlyFragment"
+        android:name="com.example.sopost.TopMonthlyFragment"
+        android:label="fragment_top_monthly"
+        tools:layout="@layout/fragment_top_monthly" />
+    <fragment
+        android:id="@+id/postDetailFragment"
+        android:name="com.example.sopost.PostDetailFragment"
+        android:label="fragment_post_detail"
+        tools:layout="@layout/fragment_post_detail" />
+</navigation>

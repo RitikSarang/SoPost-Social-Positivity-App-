@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">SoPost</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="firstTitle">Only \n<b>Positive</b> contents \nAre <b>allowed</b></string>
+    <string name="secondTitle">Badge</string>
+    <string name="secondSubTitle">Higher your badge level. \nHigher your respect</string>
+
+    <string name="loginTitle">Hello, Again! \nWelcome \nback</string>
+    <string name="signupTitle">Hello! \nSignUp to \nGet started</string>
+</resources>

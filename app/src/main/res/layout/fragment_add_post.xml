@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.AddPostFragment">
+
+    <ImageView
+        android:id="@+id/img_proceed"
+        android:layout_width="160dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_round_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/txtNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ready to Post"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_proceed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/img_proceed"
+        app:layout_constraintTop_toTopOf="@+id/img_proceed" />
+
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="150dp"
+        android:background="@drawable/ic_wave"
+        app:layout_constraintBottom_toBottomOf="@+id/img_post"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/img_bgComp"
+        android:layout_width="135dp"
+        android:layout_height="270dp"
+        android:src="@drawable/plz"
+        app:layout_constraintBottom_toTopOf="@+id/l1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/l1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/img_proceed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_bgComp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tlTitle"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="Title"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true"
+            app:errorIconDrawable="@drawable/ic_error"
+            app:helperText="Required*"
+            app:helperTextTextColor="@color/red"
+            app:layout_constraintBottom_toTopOf="@id/tlPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:startIconDrawable="@drawable/ic_baseline_person_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tfTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tlDescp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="Description"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true"
+            app:errorIconDrawable="@drawable/ic_error"
+            app:helperText="Required*"
+            app:helperTextTextColor="@color/red"
+            app:startIconDrawable="@drawable/ic_baseline_email_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tfDescp"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:inputType="textMultiLine"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/img_post"
+        android:layout_width="0dp"
+        android:layout_height="170dp"
+        android:layout_marginEnd="16dp"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_bgComp"
+        app:layout_constraintEnd_toStartOf="@+id/img_bgComp"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

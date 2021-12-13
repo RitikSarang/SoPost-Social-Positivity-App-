@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "768873164237",
+    "project_id": "sopost-9c0dc",
+    "storage_bucket": "sopost-9c0dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768873164237:android:203870af5119c1550ea884",
+        "android_client_info": {
+          "package_name": "com.example.sopost"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "768873164237-lgdg869ut6lu57vkmjbjk4k2qpc860br.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeKDAkqYllZEKot7FqDmQvlvbqMPg9CZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "768873164237-lgdg869ut6lu57vkmjbjk4k2qpc860br.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
