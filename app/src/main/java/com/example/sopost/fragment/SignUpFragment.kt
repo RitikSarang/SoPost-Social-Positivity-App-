@@ -10,6 +10,7 @@ import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
@@ -29,7 +30,6 @@ const val GALLERY_PHOTO_REQUEST = 1;
 
 class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     lateinit var viewModel: AuthViewModel
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +46,8 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        linearProgressSignUp.isVisible = false
         backButton.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -78,16 +80,27 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
                 tlPasswordSignUp.error = "Please fill password"
                 return@setOnClickListener
             } else {
-
+                linearProgressSignUp.isVisible = true
                 viewModel.register(
                     email,
                     password,
                     name,
-                    img_photo.tag as Uri,
-                    requireContext(),
-                    findNavController()
+                    img_photo.tag as Uri
                 )
+            }
+        }
 
+        viewModel.registrationStatus.observe(viewLifecycleOwner){
+            if(it){
+                linearProgressSignUp.isVisible = false
+                Toast.makeText(
+                    context,
+                    "Registration Successful",
+                    Toast.LENGTH_SHORT
+                ).show()
+                findNavController().popBackStack()
+            }else{
+                linearProgressSignUp.isVisible = false
             }
         }
 

@@ -1,15 +1,12 @@
-package com.example.sopost
+package com.example.sopost.fragment
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import com.example.sopost.Adapter.IPostAdapter
-import com.example.sopost.fragment.POSTID
+import com.example.sopost.R
 import com.example.sopost.model.Report
 import com.example.sopost.viewmodel.PostViewModel
 import com.google.android.gms.tasks.Task
@@ -19,8 +16,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_post_bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_post_bottom_sheet.view.*
-import kotlinx.android.synthetic.main.fragment_profile_bottom_sheet.*
-import kotlinx.coroutines.currentCoroutineContext
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -45,17 +45,33 @@
             android:background="@color/appBg"
             app:layout_constraintTop_toTopOf="parent" />
 
+
+
         <TextView
             android:id="@+id/txtTrending"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-
             android:layout_marginTop="40dp"
             android:text="Trending"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolBack" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/linearProgressHome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/appBg"
+            android:indeterminateTintMode="src_atop"
+            app:indeterminateAnimationType="disjoint"
+            app:indicatorColor="@color/appBg"
+            app:layout_constraintEnd_toEndOf="@+id/txtTrending"
+            app:layout_constraintStart_toStartOf="@+id/txtTrending"
+            app:layout_constraintTop_toBottomOf="@id/txtTrending"
+            app:trackThickness="5dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/home_recyclerView"
@@ -65,7 +81,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtTrending"
+            app:layout_constraintTop_toBottomOf="@+id/linearProgressHome"
             tools:listitem="@layout/list_item_post" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

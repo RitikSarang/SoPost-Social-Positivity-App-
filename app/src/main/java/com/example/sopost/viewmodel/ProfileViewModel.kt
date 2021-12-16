@@ -28,6 +28,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private var repository: ProfileRepo = ProfileRepo(application)
     var userDetails: LiveData<MutableMap<String, Any>> = repository.userDetails
     var likesLiveData: LiveData<Int> = repository.likesLiveDataRepo
+    var countForFeeds : LiveData<Int> = repository.countForFeeds
+    var followersCount : LiveData<Int> = repository.followersCount
+    var followingCount : LiveData<Int> = repository.followingCount
 
     fun updateProfile(
         img: Uri?,
@@ -40,15 +43,19 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         repository.updateProfile(img, name, bio, website, navController, context)
     }
 
-    fun getPosts(profileRecyclerview: RecyclerView, txtFeed: TextView) {
-        //repository.getPosts(profileRecyclerview, txtFeed)
+
+    fun getPostsForOthers(uid: String, txtFeed: TextView) {
+        repository.getPostsForOthers(uid, txtFeed)
     }
 
-    fun getPostsForOthers(othersRecyclerview: RecyclerView, uid: String, txtFeed: TextView) {
-        repository.getPostsForOthers(othersRecyclerview, uid, txtFeed)
+    fun getPostsForFeedCounts(){
+        repository.getPostsForFeedCounts()
     }
 
-    fun countLikes(uid: String) {
-        repository.countLikes(uid)
+    fun getFollowersCount(){
+        repository.getFollowers()
+    }
+    fun getFollowingCount(){
+        repository.getFollowing()
     }
 }

@@ -1,13 +1,16 @@
 package com.example.sopost.fragment
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.sopost.R
 import com.example.sopost.viewmodel.AuthViewModel
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.android.synthetic.main.fragment_login.*
 
 
@@ -18,6 +21,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         viewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
@@ -32,9 +36,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             requireActivity().finish()
         }
 
+        linearProgress.isVisible = false
 
         txtSignUp.setOnClickListener {
-            findNavController().navigate(R.id.signUpFragment)
+            findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
 
         btnLogin.setOnClickListener {
@@ -43,25 +48,27 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
             if(email.contains("@")){
                 if (email.isNotEmpty() && pass.isNotEmpty()) {
+                    linearProgress.isVisible = true
                     viewModel.signIn(email, pass)
-                    viewModel.getLoggedStatus().observe(viewLifecycleOwner) {
-                        if (it) {
-                            findNavController().navigate(R.id.navhomeFragment)
-                        }
-                    }
                 }
             }else{
                 val sendingEmail = "$email@gmail.com"
                 if (sendingEmail.isNotEmpty() && pass.isNotEmpty()) {
+                    linearProgress.isVisible = true
                     viewModel.signIn(sendingEmail, pass)
-                    viewModel.getLoggedStatus().observe(viewLifecycleOwner) {
-                        if (it) {
-                            findNavController().navigate(R.id.navhomeFragment)
-                        }
-                    }
                 }
             }
 
+        }
+
+
+        viewModel.loggedStatus.observe(viewLifecycleOwner) {
+            if (it) {
+                linearProgress.isVisible = false
+                findNavController().navigate(R.id.navhomeFragment)
+            }else{
+                linearProgress.isVisible = false
+            }
         }
     }
 }

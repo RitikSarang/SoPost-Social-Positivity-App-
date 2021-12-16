@@ -20,26 +20,17 @@ import java.io.File
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private var repository: AuthenticationRepository = AuthenticationRepository(application)
-    private var userData: LiveData<FirebaseUser> = repository.getFirebaseUserMutableLiveData()
-    private var loggedStatus: LiveData<Boolean> = repository.getUserLoggedMutableLiveData()
+    var loggedStatus: LiveData<Boolean> = repository.getUserLoggedMutableLiveData()
 
-    fun getUserData(): LiveData<FirebaseUser> {
-        return userData
-    }
-
-    fun getLoggedStatus(): LiveData<Boolean> {
-        return loggedStatus
-    }
+    var registrationStatus : LiveData<Boolean> = repository.isregistrationSuccessful
 
     fun register(
         email: String,
         pass: String,
         name:String,
-        tag: Uri,
-        context: Context,
-        navController: NavController
+        tag: Uri
     ) {
-        repository.register(email, pass,name,tag, context, navController)
+        repository.register(email, pass,name,tag)
     }
 
     fun signIn(email: String, pass: String) {

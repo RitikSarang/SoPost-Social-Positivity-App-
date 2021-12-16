@@ -33,17 +33,43 @@ const val TAG = "tesingfsf"
 
 class PostRepo(private val application: Application) {
     private val db = FirebaseFirestore.getInstance()
+    private val postCollection = db.collection("posts")
     private val reportCollection = db.collection("Report")
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val postCollection = db.collection("posts")
     private val userCollection = db.collection("users")
     private val postCollectionForUser = db.collection("postsbyuser")
-    private val likesCollection = db.collection("Likes")
     val storageReference = FirebaseStorage.getInstance()
 
-    private var _topUsers: MutableLiveData<ArrayList<Likes>> = MutableLiveData()
-    var topUsers: LiveData<ArrayList<Likes>> = _topUsers
 
+
+    fun countLikes(uid: String) {
+        var likesCount = 0
+        val db = FirebaseFirestore.getInstance()
+        val postCollection = db.collection("postsbyuser")
+        val likesCollection = db.collection("Likes")
+
+        postCollection.document(uid).collection("1")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val dataPost = document.toObject(Post::class.java)
+                    likesCount += dataPost.likedBy.size
+                }
+                getUserById(uid).addOnCompleteListener {
+                    if (it.isComplete) {
+                        val data = it.result?.toObject(User::class.java)
+                        data?.let {
+                            likesCollection.document(uid)
+                                .set(Likes(uid, likesCount.toString(), data.name, data.imageURL))
+                        }
+                    }
+                }
+
+            }
+            .addOnFailureListener { exception ->
+                //Log.d("likesCount", "Error getting documents: ", exception)
+            }
+    }
 
     fun insertPost(uri: Uri, title: String, desc: String, postCount: String) {
         val formatter = SimpleDateFormat("yyyy_MM_dd_mm_ss", Locale.getDefault())
@@ -114,16 +140,13 @@ class PostRepo(private val application: Application) {
 
     }
 
-    fun getPosts(home_recyclerView: RecyclerView, fragmentActivity: FragmentActivity) {
-
-    }
-
 
     private fun getUserById(uid: String): Task<DocumentSnapshot> {
         return userCollection.document(uid).get()
     }
 
-    fun getPostById(postId: String): Task<DocumentSnapshot> {
+
+    private fun getPostById(postId: String): Task<DocumentSnapshot> {
         val formatDateForPosts = SimpleDateFormat("yyyy_MM", Locale.getDefault())
         val dateForPosts = formatDateForPosts.format(Date())
 
@@ -133,10 +156,7 @@ class PostRepo(private val application: Application) {
             .get()
     }
 
-    fun getPostReportById(postId: String): Task<DocumentSnapshot> {
-        val formatDateForPosts = SimpleDateFormat("yyyy_MM", Locale.getDefault())
-        val dateForPosts = formatDateForPosts.format(Date())
-
+    private fun getPostReportById(postId: String): Task<DocumentSnapshot> {
         return reportCollection.document(postId).get()
     }
 
@@ -169,9 +189,11 @@ class PostRepo(private val application: Application) {
                         if (currentUserId == post.uid) {
                             postCollectionForUser.document(currentUserId).collection("1")
                                 .document(postId).set(post)
+                            countLikes(currentUserId)
                         } else {
                             postCollectionForUser.document(post.uid).collection("1")
                                 .document(postId).set(post)
+                            countLikes(post.uid)
                         }
                     }
                 }
@@ -263,9 +285,9 @@ class PostRepo(private val application: Application) {
     }
 
 
-    fun deletePost(postId: String, uid: String, filePath: String) {
+    private fun deletePost(postId: String, uid: String, filePath: String) {
 
-        Log.i("postdeleted", "deletePost: $postId $uid")
+       //Log.i("postdeleted", "deletePost: $postId $uid")
         val formatDateForPosts = SimpleDateFormat("yyyy_MM", Locale.getDefault())
         val dateForPosts = formatDateForPosts.format(Date())
 
@@ -290,21 +312,4 @@ class PostRepo(private val application: Application) {
 
     }
 
-    fun getTopUsers() {
-        val db = FirebaseFirestore.getInstance()
-        val likesCollection = db.collection("Likes")
-        likesCollection.get().addOnSuccessListener {
-            for (i in it) {
-                val data = i.toObject(
-                    Likes::class.java
-                )
-                if (data.likes.toInt() > 2) {
-                    //top users
-                    _topUsers.value?.add(data)
-                }
-
-            }
-        }
-
-    }
 }

@@ -219,8 +219,8 @@ class OthersProfileFragment : Fragment(R.layout.fragment_others_profile) {
         uid?.let {
             others_recyclerView.layoutManager = GridLayoutManager(requireActivity(), 3)
             others_recyclerView.setHasFixedSize(true)
-            viewModel.countLikes(uid)
-            viewModel.getPostsForOthers(others_recyclerView, uid, txtFeedOthers)
+            //viewModel.countLikes(uid)
+            viewModel.getPostsForOthers(uid, txtFeedOthers)
         }
     }
 

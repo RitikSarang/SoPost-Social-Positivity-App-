@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,11 +41,18 @@ class ProfileRepo(private val application: Application) {
 
     val userDetails: LiveData<MutableMap<String, Any>> = _userDetails
     var postArrayList: ArrayList<Post> = ArrayList<Post>()
-    private lateinit var myAdapter: PersonalPostAdapter
-    private var currentUserUid = auth.currentUser!!.uid
 
     private var _likesMutableLiveData: MutableLiveData<Int> = MutableLiveData()
     var likesLiveDataRepo: LiveData<Int> = _likesMutableLiveData
+
+    private var _countForFeeds : MutableLiveData<Int> = MutableLiveData()
+    var countForFeeds : LiveData<Int> = _countForFeeds
+
+    private var _followersCount : MutableLiveData<Int> = MutableLiveData()
+    var followersCount : LiveData<Int> = _followersCount
+
+    private var _followingCount : MutableLiveData<Int> = MutableLiveData()
+    var followingCount : LiveData<Int> = _followingCount
 
     init {
         getUserDetails()
@@ -147,58 +155,9 @@ class ProfileRepo(private val application: Application) {
         }
     }
 
-    fun getPosts(profileRecyclerview: RecyclerView, txtFeed: TextView) {
-
-        if (postArrayList.isNotEmpty()) {
-            postArrayList.clear()
-        }
-        postCollection
-            .document(auth.currentUser!!.uid)
-            .collection("1")
-            .addSnapshotListener(object :
-                com.google.firebase.firestore.EventListener<QuerySnapshot> {
-                override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
-                    if (error != null) {
-                        Log.e(TAG, "onEvent: ${error.message.toString()}")
-                        return
-                    }
-
-                    for (dc: DocumentChange in value?.documentChanges!!) {
-                        if (dc.type == DocumentChange.Type.ADDED) {
-                            postArrayList.add(dc.document.toObject(Post::class.java))
-                            /* Log.i(TAG, "onEvent: ${postArrayList.size}")
-                             Log.i(TAG, "onEvent: ${dc.document.toObject(Post::class.java)}")*/
-                        }
-                    }
-                    txtFeed.text = postArrayList.size.toString()
-                    //profileRecyclerview.adapter = PersonalPostAdapter(postArrayList)
-                    //myAdapter.notifyDataSetChanged()
-                }
-
-            })
 
 
-        //another code to get data from firestore but not realTime
-        /* postCollection.document(auth.currentUser!!.uid)
-             .collection("1").get()
-             .addOnSuccessListener(OnSuccessListener {
-                 if(!it.isEmpty){
-                     for(snap in it.documents){
-                         val posts = snap.toObject(Post::class.java)
-                         posts?.let {
-                             Log.d(TAG, "Current data: ${snap.data}")
-                             postArrayList.add(it)
-                         }
-                     }
-                     myAdapter = PersonalPostAdapter(postArrayList)
-                     profileRecyclerview.adapter = myAdapter
-
-                 }
-             })*/
-
-    }
-
-    fun getPostsForOthers(othersRecyclerview: RecyclerView, uid: String, txtFeed: TextView) {
+    fun getPostsForOthers(uid: String, txtFeed: TextView) {
         if (postArrayList.isNotEmpty()) {
             postArrayList.clear()
         }
@@ -221,50 +180,58 @@ class ProfileRepo(private val application: Application) {
                         }
                     }
                     txtFeed.text = postArrayList.size.toString()
-                    //othersRecyclerview.adapter = PersonalPostAdapter(postArrayList)
-                    //myAdapter.notifyDataSetChanged()
                 }
 
             })
 
     }
 
-    private fun getUserById(uid: String): Task<DocumentSnapshot> {
-        return userCollection.document(uid).get()
-    }
 
-    fun countLikes(uid: String) {
-        var likesCount = 0
+    fun getPostsForFeedCounts() {
 
-        postCollection.document(uid).collection("1")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val dataPost = document.toObject(Post::class.java)
-                    likesCount += dataPost.likedBy.size
-                }
-                _likesMutableLiveData.value = likesCount
+        var count=0
+        postCollection
+            .document(auth.currentUser!!.uid)
+            .collection("1")
+            .addSnapshotListener(object :
+                com.google.firebase.firestore.EventListener<QuerySnapshot> {
+                override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
+                    if (error != null) {
+                        //Log.e(com.example.sopost.repository.TAG, "onEvent: ${error.message.toString()}")
+                        return
+                    }
 
-                getUserById(uid).addOnCompleteListener {
-                    if(it.isComplete){
-                        val data = it.result?.toObject(User::class.java)
-                        data?.let {
-                            likesCollection.document(uid)
-                                .set(Likes(uid, likesCount.toString(), data.name, data.imageURL))
+                    for (dc: DocumentChange in value?.documentChanges!!) {
+                        if (dc.type == DocumentChange.Type.ADDED) {
+                            count++
                         }
                     }
+                    _countForFeeds.value = count
                 }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("likesCount", "Error getting documents: ", exception)
-            }
-}
 
-private fun saveLatestLikesCount(likesCount: Int) {
-    val pref = application.getSharedPreferences("LIKES", Context.MODE_PRIVATE)
-    with(pref.edit()) {
-        putInt("likesCount", likesCount)
-            .apply()
+            })
+
     }
-}
+
+    fun getFollowing() {
+        val mineUid = auth.currentUser?.uid.toString()
+        val collectionReference = FirebaseFirestore.getInstance()
+            .collection("Follow").document(mineUid)
+            .collection("Following")
+
+        collectionReference.get().addOnSuccessListener {
+            _followingCount.value = it.documents.size
+        }
+    }
+
+    fun getFollowers() {
+        val mineUid = auth.currentUser?.uid.toString()
+        val collectionReference = FirebaseFirestore.getInstance()
+            .collection("Follow").document(mineUid)
+            .collection("Followers")
+
+        collectionReference.get().addOnSuccessListener {
+            _followersCount.value = it.documents.size
+        }
+    }
 }

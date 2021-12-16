@@ -42,13 +42,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ProfileFragment : Fragment(R.layout.fragment_profile),IPersonalPostAdapter {
+class ProfileFragment : Fragment(R.layout.fragment_profile), IPersonalPostAdapter {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val db = FirebaseFirestore.getInstance()
     lateinit var viewModel: ProfileViewModel
     private lateinit var adapter: PersonalPostAdapter
-    val postCollection = db.collection("postsbyuser")
-    val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,20 +55,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile),IPersonalPostAdapter
             ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
         ).get(ProfileViewModel::class.java)
 
-        viewModel.countLikes(auth.currentUser!!.uid)
 
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        setRecyclerView()
-        progressBar.isVisible = true
-
-
         val navController = findNavController()
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         toolbar.setupWithNavController(navController, appBarConfiguration)
+
+        setRecyclerView()
+        progressBar.isVisible = true
 
         var name = ""
         var index = 0
@@ -84,8 +79,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile),IPersonalPostAdapter
         txtProfileTitle.text = name
 
         fetchUserData()
-        getFollowers()
-        getFollowing()
+        viewModel.getPostsForFeedCounts()
+        viewModel.getFollowersCount()
+        viewModel.getFollowingCount()
 
         btnEditProfile.setOnClickListener {
             findNavController().navigate(R.id.editProfileFragment)
@@ -159,22 +155,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile),IPersonalPostAdapter
                 }
             }
         }
-    }
-
-    private fun getLatestLikeCount(): Int {
-        val pref = requireContext().getSharedPreferences("LIKES", Context.MODE_PRIVATE)
-        return pref.getInt("LIKES", 0)
-    }
-
-    private fun saveLatestLikesCount(likesCount: Int) {
-        val pref = requireContext().getSharedPreferences("LIKES", Context.MODE_PRIVATE)
-        with(pref.edit()) {
-            putInt("likesCount", likesCount)
-                .commit()
+        viewModel.countForFeeds.observe(viewLifecycleOwner) {
+            txtFeed.text = it.toString()
+        }
+        viewModel.followersCount.observe(viewLifecycleOwner) {
+            txtFollowers.text = it.toString()
+        }
+        viewModel.followingCount.observe(viewLifecycleOwner) {
+            txtFollowing.text = it.toString()
         }
     }
+
     private fun setRecyclerView() {
-        getPosts(txtFeed)
+        val db = FirebaseFirestore.getInstance()
+        val postCollection = db.collection("postsbyuser")
+        val uid = FirebaseAuth.getInstance().currentUser!!.uid
         val query = postCollection
             .document(uid)
             .collection("1")
@@ -182,17 +177,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile),IPersonalPostAdapter
         val recyclerViewOptions =
             FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
 
-        adapter = PersonalPostAdapter(recyclerViewOptions,this)
+        adapter = PersonalPostAdapter(recyclerViewOptions, this)
 
-        profile_recyclerView.layoutManager = GridLayoutManager(requireActivity(),3)
+        profile_recyclerView.layoutManager = GridLayoutManager(requireActivity(), 3)
         profile_recyclerView.setHasFixedSize(true)
-        //countLikes(FirebaseAuth.getInstance().currentUser!!.uid)
         profile_recyclerView.adapter = adapter
     }
 
     override fun onStart() {
         super.onStart()
-
         adapter.startListening()
     }
 
@@ -201,52 +194,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile),IPersonalPostAdapter
         adapter.stopListening()
     }
 
-    fun getPosts(txtFeed: TextView) {
-
-        var count=0
-        postCollection
-            .document(auth.currentUser!!.uid)
-            .collection("1")
-            .addSnapshotListener(object :
-                com.google.firebase.firestore.EventListener<QuerySnapshot> {
-                override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
-                    if (error != null) {
-                        Log.e(com.example.sopost.repository.TAG, "onEvent: ${error.message.toString()}")
-                        return
-                    }
-
-                    for (dc: DocumentChange in value?.documentChanges!!) {
-                        if (dc.type == DocumentChange.Type.ADDED) {
-                            count++
-                        }
-                    }
-                    txtFeed.text = count.toString()
-                }
-
-            })
-
-    }
-    private fun getFollowing() {
-        val mineUid = auth.currentUser?.uid.toString()
-        val q = FirebaseFirestore.getInstance()
-            .collection("Follow").document(mineUid)
-            .collection("Following")
-
-        q.get().addOnSuccessListener {
-            txtFollowing.text = it.documents.size.toString()
-        }
-    }
-
-    private fun getFollowers() {
-        val mineUid = auth.currentUser?.uid.toString()
-        val q = FirebaseFirestore.getInstance()
-            .collection("Follow").document(mineUid)
-            .collection("Followers")
-
-        q.get().addOnSuccessListener {
-            txtFollowers.text = it.documents.size.toString()
-        }
-    }
 
     private fun fetchUserData() {
         viewModel.userDetails.observe(viewLifecycleOwner) {
@@ -269,8 +216,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile),IPersonalPostAdapter
 
     override fun onPostClicked(uid: String, postID: String) {
         val bundle = Bundle()
-        bundle.putString("PROFILEPOSTID",postID)
-        findNavController().navigate(R.id.postDetailFragment,bundle)
+        bundle.putString("PROFILEPOSTID", postID)
+        findNavController().navigate(R.id.postDetailFragment, bundle)
     }
 
 }

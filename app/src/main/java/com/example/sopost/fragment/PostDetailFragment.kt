@@ -1,4 +1,4 @@
-package com.example.sopost
+package com.example.sopost.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import com.ablanco.zoomy.Zoomy
 import com.bumptech.glide.Glide
+import com.example.sopost.R
 import com.example.sopost.model.Post
 import com.example.sopost.utils.Utils
 import com.google.android.gms.tasks.Task

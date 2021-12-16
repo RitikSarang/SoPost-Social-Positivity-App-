@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import com.example.sopost.R
 import com.example.sopost.model.FollowFollowing
+import com.example.sopost.model.Likes
 import com.example.sopost.model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -24,16 +25,15 @@ import java.util.*
 
 
 class AuthenticationRepository(private val application: Application) {
-    private val firebaseUserMutableLiveData: MutableLiveData<FirebaseUser> = MutableLiveData()
+
     private val userLoggedMutableLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
     private val userCollection = db.collection("users")
 
+    private var _isregistrationSuccessful: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isregistrationSuccessful: LiveData<Boolean> = _isregistrationSuccessful
 
-    fun getFirebaseUserMutableLiveData(): LiveData<FirebaseUser> {
-        return firebaseUserMutableLiveData
-    }
 
     fun getUserLoggedMutableLiveData(): LiveData<Boolean> {
         return userLoggedMutableLiveData
@@ -43,13 +43,10 @@ class AuthenticationRepository(private val application: Application) {
         email: String,
         pass: String,
         name: String,
-        tag: Uri,
-        context: Context,
-        navController: NavController
+        tag: Uri
     ) {
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                firebaseUserMutableLiveData.postValue(auth.currentUser)
 
                 val formatter = SimpleDateFormat("yyyy_MM_dd_mm_ss", Locale.getDefault())
                 val now = Date()
@@ -61,52 +58,57 @@ class AuthenticationRepository(private val application: Application) {
 
                 storageReference.putFile(tag).addOnSuccessListener {
 
-                        val user = User(
-                            task.result!!.user!!.uid,
-                            "profImages/${auth.currentUser!!.uid}/$fileName",
-                            name,
-                            email,
-                            bio = "",
-                            website = ""
-                        )
+                    val user = User(
+                        task.result!!.user!!.uid,
+                        "profImages/${auth.currentUser!!.uid}/$fileName",
+                        name,
+                        email,
+                        bio = "",
+                        website = ""
+                    )
 
 
-                        userCollection.document(task.result!!.user!!.uid).set(user)
-                        Toast.makeText(
-                            context,
-                            "Registration Successful",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        val u = "9ZjfJm0S99b0lrX5QNCHmDx9w4B3"
-                        FirebaseFirestore.getInstance()
-                            .collection("Follow").document(task.result!!.user!!.uid)
-                            .collection("Following").document(u)
-                            .set(FollowFollowing(u, true))
+                    userCollection.document(task.result!!.user!!.uid).set(user)
 
-                        FirebaseFirestore.getInstance()
-                            .collection("Follow").document(u)
-                            .collection("Followers").document(user.uid)
-                            .set(FollowFollowing(u, true))
+                    val u = "9ZjfJm0S99b0lrX5QNCHmDx9w4B3"
+                    FirebaseFirestore.getInstance()
+                        .collection("Follow").document(task.result!!.user!!.uid)
+                        .collection("Following").document(u)
+                        .set(FollowFollowing(u, true))
 
-                        navController.popBackStack()
-                }.addOnFailureListener{
+                    FirebaseFirestore.getInstance()
+                        .collection("Follow").document(u)
+                        .collection("Followers").document(user.uid)
+                        .set(FollowFollowing(u, true))
 
+                    //save state inside livedata
+                    _isregistrationSuccessful.value = true
+
+                }.addOnFailureListener {
+                    Toast.makeText(application, it.message, Toast.LENGTH_SHORT)
+                        .show()
+                    _isregistrationSuccessful.value = false
                 }
 
 
             } else {
                 Toast.makeText(application, task.exception?.message, Toast.LENGTH_SHORT)
                     .show()
+                _isregistrationSuccessful.value = false
             }
+        }.addOnFailureListener{
+            Toast.makeText(application, it.message, Toast.LENGTH_SHORT)
+                .show()
+            _isregistrationSuccessful.value = false
         }
     }
 
     fun login(email: String, pass: String) {
         auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                firebaseUserMutableLiveData.postValue(auth.currentUser)
                 userLoggedMutableLiveData.postValue(true)
             } else {
+                userLoggedMutableLiveData.postValue(false)
                 Toast.makeText(application, task.exception?.message, Toast.LENGTH_SHORT)
                     .show()
             }
@@ -117,10 +119,5 @@ class AuthenticationRepository(private val application: Application) {
         auth.signOut()
     }
 
-    init {
-        if (auth.currentUser != null) {
-            firebaseUserMutableLiveData.postValue(auth.currentUser)
-        }
-    }
 
 }

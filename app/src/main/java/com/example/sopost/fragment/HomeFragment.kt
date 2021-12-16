@@ -54,9 +54,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
     lateinit var rForward: Animation
     lateinit var rBackward: Animation
     var isOpen: Boolean = false
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
     private lateinit var adapter: PostAdapter
+
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +81,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         // If the user presses the back button, exit the app
+        linearProgressHome.isVisible = false
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             val builder = AlertDialog.Builder(context)
             with(builder) {
@@ -106,31 +108,37 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
 
         }
         setRecyclerView()
+        postViewModel.countLikes(FirebaseAuth.getInstance().currentUser!!.uid)
     }
 
     private fun setRecyclerView() {
-
-        val db = FirebaseFirestore.getInstance()
-        val postCollection = db.collection("posts")
-
+        linearProgressHome.isVisible = true
         val formatDateForPosts = SimpleDateFormat("yyyy_MM", Locale.getDefault())
         val dateForPosts = formatDateForPosts.format(Date())
 
+        val db = FirebaseFirestore.getInstance()
+        val postCollection = db.collection("posts")
         val query = postCollection
             .document(dateForPosts)
             .collection("1")
             .orderBy("createAt", Query.Direction.DESCENDING)
+
         val recyclerViewOptions =
             FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
 
-        adapter = PostAdapter(recyclerViewOptions, this , requireActivity())
-
         home_recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         home_recyclerView.setHasFixedSize(true)
-        countLikes(FirebaseAuth.getInstance().currentUser!!.uid)
+
+        adapter = PostAdapter(recyclerViewOptions, this, requireActivity())
         home_recyclerView.adapter = adapter
-
-
+        val querys = postCollection
+            .document(dateForPosts)
+            .collection("1")
+            .orderBy("createAt", Query.Direction.DESCENDING).get().addOnCompleteListener{
+                if(it.isComplete){
+                    linearProgressHome.isVisible = false
+                }
+            }
     }
 
 
@@ -201,7 +209,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
 
     private fun handleMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.notify -> {
+            R.id.top_list -> {
                 findNavController().navigate(R.id.topMonthlyFragment)
                 true
             }
@@ -233,50 +241,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
         findNavController().navigate(R.id.action_navhomeFragment_to_postBottomSheetFragment, bundle)
     }
 
-    private fun getUserById(uid: String): Task<DocumentSnapshot> {
-        val db = FirebaseFirestore.getInstance()
-        val userCollection = db.collection("users")
-        return userCollection.document(uid).get()
-    }
-
-    fun countLikes(uid: String) {
-        var likesCount = 0
-        val db = FirebaseFirestore.getInstance()
-        val postCollection = db.collection("postsbyuser")
-        val likesCollection = db.collection("Likes")
-
-        postCollection.document(uid).collection("1")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val dataPost = document.toObject(Post::class.java)
-                    likesCount += dataPost.likedBy.size
-                }
-                getUserById(uid).addOnCompleteListener {
-                    if(it.isComplete){
-                        val data = it.result?.toObject(User::class.java)
-                        data?.let {
-                            likesCollection.document(uid)
-                                .set(Likes(uid, likesCount.toString(), data.name, data.imageURL))
-                        }
-                    }
-                }
-
-            }
-            .addOnFailureListener { exception ->
-                Log.d("likesCount", "Error getting documents: ", exception)
-            }
-    }
-
-
 
     override fun onStart() {
         super.onStart()
+        //linearProgressHome.isVisible = true
         adapter.startListening()
     }
 
     override fun onStop() {
         super.onStop()
+        linearProgressHome.isVisible = false
         adapter.stopListening()
     }
 }

@@ -17,6 +17,7 @@ import com.example.sopost.model.Post
 import com.example.sopost.model.User
 import com.example.sopost.repository.AuthenticationRepository
 import com.example.sopost.repository.PostRepo
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
@@ -27,14 +28,14 @@ import java.io.File
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     private var repository: PostRepo = PostRepo(application)
+
     fun insertPost(uri: Uri, title: String, desc: String,postCount:String) {
         return repository.insertPost(uri, title, desc,postCount)
     }
 
-    fun getPosts(home_recyclerView: RecyclerView,fragmentActivity: FragmentActivity){
-        repository.getPosts(home_recyclerView,fragmentActivity)
+    fun countLikes(uid:String){
+        repository.countLikes(uid)
     }
-
     fun setLikePosts(postId:String){
         repository.setLikePosts(postId)
     }

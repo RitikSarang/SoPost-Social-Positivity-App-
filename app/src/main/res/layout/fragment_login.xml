@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".fragment.LoginFragment">
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/linearProgress"
+        android:layout_width="match_parent"
+        app:trackThickness="5dp"
+        android:layout_height="wrap_content"
+        app:indeterminateAnimationType="disjoint"
+        android:indeterminate="true"
+        app:indicatorColor="@color/appBg"
+        android:indeterminateTint="@color/appBg"
+        android:indeterminateTintMode="src_atop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"

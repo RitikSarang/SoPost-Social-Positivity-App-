@@ -13,6 +13,27 @@
         <action
             android:id="@+id/action_navhomeFragment_to_postBottomSheetFragment"
             app:destination="@id/postBottomSheetFragment" />
+        <action
+            android:id="@+id/action_navhomeFragment_to_addPostFragment"
+            app:destination="@id/addPostFragment" />
+        <action
+            android:id="@+id/action_navhomeFragment_to_postBottomSheetFragment2"
+            app:destination="@id/postBottomSheetFragment" />
+        <action
+            android:id="@+id/action_navhomeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_navhomeFragment_to_notificationFragment"
+            app:destination="@id/notificationFragment" />
+        <action
+            android:id="@+id/action_navhomeFragment_to_topMonthlyFragment"
+            app:destination="@id/topMonthlyFragment" />
+        <action
+            android:id="@+id/action_navhomeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_navhomeFragment_to_othersProfileFragment"
+            app:destination="@id/othersProfileFragment" />
     </fragment>
 
     <fragment
@@ -24,7 +45,20 @@
         android:id="@+id/profileFragment"
         android:name="com.example.sopost.fragment.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_followerContainerFragment"
+            app:destination="@id/followerContainerFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_profileBottomSheetFragment"
+            app:destination="@id/profileBottomSheetFragment" />
+    </fragment>
     <fragment
         android:id="@+id/favFragment"
         android:name="com.example.sopost.fragment.FavFragment"
@@ -60,17 +94,21 @@
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/followerContainerFragment"
-        android:name="com.example.sopost.FollowerContainerFragment"
+        android:name="com.example.sopost.fragment.FollowerContainerFragment"
         android:label="fragment_follower_container"
         tools:layout="@layout/fragment_follower_container" />
     <fragment
         android:id="@+id/othersProfileFragment"
         android:name="com.example.sopost.OthersProfileFragment"
         android:label="fragment_others_profile"
-        tools:layout="@layout/fragment_others_profile" />
+        tools:layout="@layout/fragment_others_profile" >
+        <action
+            android:id="@+id/action_othersProfileFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
     <dialog
         android:id="@+id/profileBottomSheetFragment"
-        android:name="com.example.sopost.ProfileBottomSheetFragment"
+        android:name="com.example.sopost.fragment.ProfileBottomSheetFragment"
         android:label="fragment_profile_bottom_sheet"
         tools:layout="@layout/fragment_profile_bottom_sheet" />
     <fragment
@@ -80,7 +118,7 @@
         tools:layout="@layout/fragment_add_post" />
     <dialog
         android:id="@+id/postBottomSheetFragment"
-        android:name="com.example.sopost.PostBottomSheetFragment"
+        android:name="com.example.sopost.fragment.PostBottomSheetFragment"
         android:label="fragment_post_bottom_sheet"
         tools:layout="@layout/fragment_post_bottom_sheet" >
         <argument
@@ -89,12 +127,12 @@
     </dialog>
     <fragment
         android:id="@+id/topMonthlyFragment"
-        android:name="com.example.sopost.TopMonthlyFragment"
+        android:name="com.example.sopost.fragment.TopMonthlyFragment"
         android:label="fragment_top_monthly"
         tools:layout="@layout/fragment_top_monthly" />
     <fragment
         android:id="@+id/postDetailFragment"
-        android:name="com.example.sopost.PostDetailFragment"
+        android:name="com.example.sopost.fragment.PostDetailFragment"
         android:label="fragment_post_detail"
         tools:layout="@layout/fragment_post_detail" />
 </navigation>
