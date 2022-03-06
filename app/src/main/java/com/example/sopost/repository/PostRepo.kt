@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,6 +24,8 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_post_bottom_sheet.*
+import kotlinx.android.synthetic.main.fragment_post_bottom_sheet.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -39,7 +42,8 @@ class PostRepo(private val application: Application) {
     private val userCollection = db.collection("users")
     private val postCollectionForUser = db.collection("postsbyuser")
     val storageReference = FirebaseStorage.getInstance()
-
+    private var _reportStatus : MutableLiveData<Report> = MutableLiveData()
+    var reportStatus : LiveData<Report> = _reportStatus
 
 
     fun countLikes(uid: String) {
@@ -312,4 +316,19 @@ class PostRepo(private val application: Application) {
 
     }
 
+    private fun getPostReportByIds(postId: String): Task<DocumentSnapshot> {
+        return reportCollection.document(postId).get()
+    }
+
+    fun getReportTextStatus(postId: String){
+        getPostReportByIds(postId).addOnCompleteListener {
+            if (it.isComplete) {
+                val report = it.result?.toObject(Report::class.java)
+                report?.let {
+                    _reportStatus.value = it
+                }
+
+            }
+        }
+    }
 }

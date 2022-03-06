@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
+import androidx.navigation.fragment.navArgs
 import com.ablanco.zoomy.Zoomy
 import com.bumptech.glide.Glide
+import com.example.sopost.PostCheckFragmentArgs
 import com.example.sopost.R
 import com.example.sopost.model.Post
 import com.example.sopost.utils.Utils
@@ -18,17 +20,18 @@ import kotlinx.android.synthetic.main.fragment_post_detail.*
 
 
 class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
+    private val args by navArgs<PostDetailFragmentArgs>()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val postID = arguments?.getString("PROFILEPOSTID")
-        postID?.let {
-            setUpData(postID)
-        }
+        val postID = args.postId.postId
+        val postUserUid = args.postId.uid
+        setUpData(postID,postUserUid)
     }
 
-    private fun setUpData(postID: String) {
-        getPostById(postID).addOnCompleteListener { post ->
+    private fun setUpData(postID: String,uid: String) {
+        getPostById(postID,uid).addOnCompleteListener { post ->
             if(post.isComplete){
                 val data = post.result?.toObject(Post::class.java)
                 data?.let {
@@ -71,10 +74,10 @@ class PostDetailFragment : Fragment(R.layout.fragment_post_detail) {
         builder.register()
     }
 
-    private fun getPostById(postId: String): Task<DocumentSnapshot> {
+    private fun getPostById(postId: String,uid:String): Task<DocumentSnapshot> {
         val db = FirebaseFirestore.getInstance()
         val postCollection = db.collection("postsbyuser")
-        val uid = FirebaseAuth.getInstance().currentUser!!.uid
+        //val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
 
         return postCollection.document(uid)

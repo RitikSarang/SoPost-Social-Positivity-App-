@@ -6,17 +6,20 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.sopost.R
 import com.example.sopost.createFile
 import com.example.sopost.model.Post
 import com.example.sopost.viewmodel.PostViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_add_post.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
@@ -28,8 +31,10 @@ import java.io.IOException
 const val GALLERY_PHOTO_REQUEST2 = 2;
 class AddPostFragment : Fragment(R.layout.fragment_add_post) {
     lateinit var viewModel: PostViewModel
-    lateinit var imageURI : Uri
+    private lateinit var imageURI : Uri
     private var count = 1
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,8 +77,11 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
                 }
                 else -> {
                     //database entry
-                    viewModel.insertPost(img_post.tag as Uri,title,desc,count.toString())
-                    findNavController().popBackStack()
+                    //viewModel.insertPost(img_post.tag as Uri,title,desc,count.toString())
+//                    findNavController().popBackStack()
+                    val postCheck = PostCheck(img_post.tag as Uri,title,desc,count.toString())
+                    val actions = AddPostFragmentDirections.actionAddPostFragmentToPostCheckFragment(postCheck)
+                    findNavController().navigate(actions)
                 }
             }
 
@@ -102,3 +110,11 @@ class AddPostFragment : Fragment(R.layout.fragment_add_post) {
          startActivityForResult(gallery, 100)
     }
 }
+
+@Parcelize
+data class PostCheck(
+    val img_URI : Uri,
+    val title:String,
+    val desc : String,
+    val count:String
+):Parcelable

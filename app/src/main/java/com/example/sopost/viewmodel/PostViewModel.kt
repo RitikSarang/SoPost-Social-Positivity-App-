@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sopost.Adapter.PostAdapter
 import com.example.sopost.model.Post
+import com.example.sopost.model.Report
 import com.example.sopost.model.User
 import com.example.sopost.repository.AuthenticationRepository
 import com.example.sopost.repository.PostRepo
@@ -28,6 +29,7 @@ import java.io.File
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     private var repository: PostRepo = PostRepo(application)
+    var reportStatus : LiveData<Report> = repository.reportStatus
 
     fun insertPost(uri: Uri, title: String, desc: String,postCount:String) {
         return repository.insertPost(uri, title, desc,postCount)
@@ -42,5 +44,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setReport(postId:String){
         repository.setReport(postId)
+    }
+
+    fun getReportTextStatus(postId: String){
+        repository.getReportTextStatus(postId)
     }
 }

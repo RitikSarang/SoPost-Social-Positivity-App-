@@ -22,6 +22,8 @@ import com.bumptech.glide.Glide
 import com.example.sopost.Adapter.IPersonalPostAdapter
 import com.example.sopost.Adapter.PersonalPostAdapter
 import com.example.sopost.Adapter.PostAdapter
+import com.example.sopost.OthersProfileFragmentDirections
+import com.example.sopost.PostId
 import com.example.sopost.R
 import com.example.sopost.model.Post
 import com.example.sopost.repository.ProfileRepo
@@ -54,8 +56,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile), IPersonalPostAdapte
             this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
         ).get(ProfileViewModel::class.java)
-
-
+        viewModel.getLikesCount(auth.currentUser!!.uid)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -98,6 +99,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile), IPersonalPostAdapte
         btn_bottomSheet.setOnClickListener {
             findNavController().navigate(R.id.profileBottomSheetFragment)
         }
+
 
         viewModel.likesLiveData.observe(viewLifecycleOwner) { likedCount ->
             Log.d("likesCount", "From fragment${likedCount}")
@@ -155,6 +157,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile), IPersonalPostAdapte
                 }
             }
         }
+
         viewModel.countForFeeds.observe(viewLifecycleOwner) {
             txtFeed.text = it.toString()
         }
@@ -169,6 +172,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile), IPersonalPostAdapte
     private fun setRecyclerView() {
         val db = FirebaseFirestore.getInstance()
         val postCollection = db.collection("postsbyuser")
+
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
         val query = postCollection
             .document(uid)
@@ -215,9 +219,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile), IPersonalPostAdapte
     }
 
     override fun onPostClicked(uid: String, postID: String) {
-        val bundle = Bundle()
-        bundle.putString("PROFILEPOSTID", postID)
-        findNavController().navigate(R.id.postDetailFragment, bundle)
+        val postId = PostId(postID,uid)
+        val actions = ProfileFragmentDirections.actionProfileFragmentToPostDetailFragment(postId)
+        findNavController().navigate(actions)
     }
 
 }

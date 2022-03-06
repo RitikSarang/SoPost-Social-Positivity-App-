@@ -11,6 +11,7 @@
     <color name="appBg">#4e90bc</color>
     <color name="applightBg">#80B9DF</color>
     <color name="red">#E53935</color>
+    <color name="green">#4CAF50</color>
     <color name="grey">#939393</color>
     <color name="yellow">#FB8C00</color>
     <color name="transparent">#00000000</color>

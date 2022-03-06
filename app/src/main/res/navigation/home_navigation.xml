@@ -115,7 +115,11 @@
         android:id="@+id/addPostFragment"
         android:name="com.example.sopost.fragment.AddPostFragment"
         android:label="fragment_add_post"
-        tools:layout="@layout/fragment_add_post" />
+        tools:layout="@layout/fragment_add_post" >
+        <action
+            android:id="@+id/action_addPostFragment_to_postCheckFragment"
+            app:destination="@id/postCheckFragment" />
+    </fragment>
     <dialog
         android:id="@+id/postBottomSheetFragment"
         android:name="com.example.sopost.fragment.PostBottomSheetFragment"
@@ -134,5 +138,21 @@
         android:id="@+id/postDetailFragment"
         android:name="com.example.sopost.fragment.PostDetailFragment"
         android:label="fragment_post_detail"
-        tools:layout="@layout/fragment_post_detail" />
+        tools:layout="@layout/fragment_post_detail" >
+        <argument
+            android:name="postId"
+            app:argType="com.example.sopost.PostId" />
+    </fragment>
+    <fragment
+        android:id="@+id/postCheckFragment"
+        android:name="com.example.sopost.PostCheckFragment"
+        android:label="fragment_post_check"
+        tools:layout="@layout/fragment_post_check" >
+        <argument
+            android:name="postCheck"
+            app:argType="com.example.sopost.fragment.PostCheck" />
+        <action
+            android:id="@+id/action_postCheckFragment_to_navhomeFragment"
+            app:destination="@id/navhomeFragment" />
+    </fragment>
 </navigation>

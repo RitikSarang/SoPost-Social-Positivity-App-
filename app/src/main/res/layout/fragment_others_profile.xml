@@ -176,26 +176,11 @@
             android:layout_marginTop="10dp"
             android:textStyle="normal"
             android:text="Edit Profile"
+            android:layout_marginEnd="15dp"
             app:strokeWidth="0.5dp"
-            app:layout_constraintEnd_toStartOf="@id/btn_bottomSheet"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtWebsite" />
-
-        <Button
-            android:id="@+id/btn_bottomSheet"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/white"
-            android:background="@drawable/ic_baseline_keyboard_arrow_down_24"
-            android:textStyle="normal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/followbutton"
-            app:layout_constraintTop_toBottomOf="@+id/txtWebsite"
-            app:strokeWidth="0.5dp" />
-
 
 
         <TextView

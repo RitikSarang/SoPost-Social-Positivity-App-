@@ -48,8 +48,15 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         repository.getPostsForOthers(uid, txtFeed)
     }
 
+    fun getLikesCount(uid: String){
+        repository.getLikesCount(uid)
+    }
+
     fun getPostsForFeedCounts(){
         repository.getPostsForFeedCounts()
+    }
+    fun getOthersPostsForFeedCounts(uid:String){
+        repository.getOthersPostsForFeedCounts(uid)
     }
 
     fun getFollowersCount(){

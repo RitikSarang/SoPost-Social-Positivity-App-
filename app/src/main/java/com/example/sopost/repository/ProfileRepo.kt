@@ -212,6 +212,31 @@ class ProfileRepo(private val application: Application) {
             })
 
     }
+    fun getOthersPostsForFeedCounts(uid:String) {
+
+        var count=0
+        postCollection
+            .document(uid)
+            .collection("1")
+            .addSnapshotListener(object :
+                com.google.firebase.firestore.EventListener<QuerySnapshot> {
+                override fun onEvent(value: QuerySnapshot?, error: FirebaseFirestoreException?) {
+                    if (error != null) {
+                        //Log.e(com.example.sopost.repository.TAG, "onEvent: ${error.message.toString()}")
+                        return
+                    }
+
+                    for (dc: DocumentChange in value?.documentChanges!!) {
+                        if (dc.type == DocumentChange.Type.ADDED) {
+                            count++
+                        }
+                    }
+                    _countForFeeds.value = count
+                }
+
+            })
+
+    }
 
     fun getFollowing() {
         val mineUid = auth.currentUser?.uid.toString()
@@ -232,6 +257,14 @@ class ProfileRepo(private val application: Application) {
 
         collectionReference.get().addOnSuccessListener {
             _followersCount.value = it.documents.size
+        }
+    }
+
+    fun getLikesCount(uid: String){
+        likesCollection.document(uid).get().addOnCompleteListener {
+            if(it.isComplete){
+                _likesMutableLiveData.value = it.result?.get("likes").toString().toInt()
+            }
         }
     }
 }

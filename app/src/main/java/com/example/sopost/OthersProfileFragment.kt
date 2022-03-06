@@ -3,7 +3,9 @@ package com.example.sopost
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -17,14 +19,21 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.example.sopost.Adapter.IPersonalPostAdapter
+import com.example.sopost.Adapter.PersonalPostAdapter
+import com.example.sopost.fragment.AddPostFragmentDirections
 import com.example.sopost.model.FollowFollowing
+import com.example.sopost.model.Post
 import com.example.sopost.viewmodel.ProfileViewModel
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.fragment_others_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.profImg
@@ -42,11 +51,12 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 
-class OthersProfileFragment : Fragment(R.layout.fragment_others_profile) {
+class OthersProfileFragment : Fragment(R.layout.fragment_others_profile),IPersonalPostAdapter{
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
     private var firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     lateinit var viewModel: ProfileViewModel
+    private lateinit var adapter: PersonalPostAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +80,7 @@ class OthersProfileFragment : Fragment(R.layout.fragment_others_profile) {
         val pref = requireActivity().getSharedPreferences("PREFS", Context.MODE_PRIVATE)
         val uid = pref.getString("profileUID", null)
 
+
         setUpRecyclerView(uid)
         progressBar.isVisible = true
 
@@ -79,6 +90,8 @@ class OthersProfileFragment : Fragment(R.layout.fragment_others_profile) {
 
 
         uid?.let {
+            viewModel.getLikesCount(uid)
+            viewModel.getOthersPostsForFeedCounts(uid)
             fetchUserData(uid)
             getFollowers(uid)
             getFollowing(uid)
@@ -213,18 +226,49 @@ class OthersProfileFragment : Fragment(R.layout.fragment_others_profile) {
                 }
             }
         }
+        viewModel.countForFeeds.observe(viewLifecycleOwner) {
+            txtFeedOthers.text = it.toString()
+        }
     }
 
     private fun setUpRecyclerView(uid: String?) {
-        uid?.let {
+       /* uid?.let {
             others_recyclerView.layoutManager = GridLayoutManager(requireActivity(), 3)
             others_recyclerView.setHasFixedSize(true)
             //viewModel.countLikes(uid)
             viewModel.getPostsForOthers(uid, txtFeedOthers)
+        }*/
+
+        val db = FirebaseFirestore.getInstance()
+        val postCollection = db.collection("postsbyuser")
+
+        uid?.let {
+
+            val query = postCollection
+                .document(uid)
+                .collection("1")
+                .orderBy("createAt", Query.Direction.DESCENDING)
+            val recyclerViewOptions =
+                FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
+
+            adapter = PersonalPostAdapter(recyclerViewOptions, this)
+
+            others_recyclerView.layoutManager = GridLayoutManager(requireActivity(), 3)
+            others_recyclerView.setHasFixedSize(true)
+            others_recyclerView.adapter = adapter
         }
     }
 
 
+    override fun onStart() {
+        super.onStart()
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
+    }
     private fun getFollowing(uid: String) {
         val mineUid = uid
         val q = FirebaseFirestore.getInstance()
@@ -302,4 +346,18 @@ class OthersProfileFragment : Fragment(R.layout.fragment_others_profile) {
 
         followbutton.text = "Follow"
     }
+
+    override fun onPostClicked(uid: String, postID: String) {
+
+        val postId = PostId(postID,uid)
+        val actions = OthersProfileFragmentDirections.actionOthersProfileFragmentToPostDetailFragment(postId)
+        findNavController().navigate(actions)
+    }
 }
+
+
+@Parcelize
+data class PostId(
+    val postId:String,
+    val uid:String
+): Parcelable

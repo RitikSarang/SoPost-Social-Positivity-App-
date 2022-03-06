@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.sopost.R
 import com.example.sopost.model.Report
 import com.example.sopost.viewmodel.PostViewModel
@@ -24,7 +25,6 @@ class PostBottomSheetFragment : BottomSheetDialogFragment() {
     var id: String = ""
     private lateinit var postViewModel: PostViewModel
     private val db = FirebaseFirestore.getInstance()
-    private val reportCollection = db.collection("Report")
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,41 +52,31 @@ class PostBottomSheetFragment : BottomSheetDialogFragment() {
         //take uid frmo adapter and give it to report
         val postId = arguments?.getString(POSTID)
         postId?.let {
-            getPostReportById(postId).addOnCompleteListener {
-                if (it.isComplete) {
-                    val report = it.result?.toObject(Report::class.java)
-                    report?.let {
-                        val currentUserId = auth.currentUser!!.uid
-                        val tempUID = it.report.contains(currentUserId)
-
-                        top_l.isVisible = it.uid != currentUserId
-                        if(top_l.isVisible) {
-                            if (tempUID) {
-                                view.txt_report.text = "UnReport"
-                            } else {
-                                view.txt_report.text = "Report"
-                            }
-                        }
+            postViewModel.getReportTextStatus(it)
+        }
+        postViewModel.reportStatus.observe(viewLifecycleOwner){ report ->
+            report?.let {  nullSafeReport ->
+                val currentUserId = auth.currentUser!!.uid
+                val tempUID = nullSafeReport.report.contains(currentUserId)
+                top_l.isVisible = nullSafeReport.uid != currentUserId
+                if(top_l.isVisible) {
+                    if (tempUID) {
+                        view.txt_report.text = "UnReport"
+                    } else {
+                        view.txt_report.text = "Report"
                     }
-
                 }
             }
         }
         top_l.setOnClickListener {
             //Toast.makeText(context, "${postId}", Toast.LENGTH_SHORT).show()
-
             //check here if reported or unreported
             postId?.let {
                 postViewModel.setReport(postId)
             }
-
+            findNavController().popBackStack()
         }
     }
 
-    private fun getPostReportById(postId: String): Task<DocumentSnapshot> {
-        val formatDateForPosts = SimpleDateFormat("yyyy_MM", Locale.getDefault())
-        val dateForPosts = formatDateForPosts.format(Date())
 
-        return reportCollection.document(postId).get()
-    }
 }
