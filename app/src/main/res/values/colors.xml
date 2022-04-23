@@ -15,4 +15,5 @@
     <color name="grey">#939393</color>
     <color name="yellow">#FB8C00</color>
     <color name="transparent">#00000000</color>
+    <color name="diff_black">#020f38</color>
 </resources>

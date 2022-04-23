@@ -42,6 +42,9 @@ class TopMonthlyFragment : Fragment(R.layout.fragment_top_monthly) {
 
         val query = likesCollection
             .orderBy("likes", Query.Direction.DESCENDING)
+
+
+
         val recyclerViewOptions =
             FirestoreRecyclerOptions.Builder<Likes>().setQuery(query, Likes::class.java).build()
 

@@ -20,9 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sopost.Adapter.IPostAdapter
 import com.example.sopost.Adapter.PostAdapter
 import com.example.sopost.R
-import com.example.sopost.model.Likes
-import com.example.sopost.model.Post
-import com.example.sopost.model.User
+import com.example.sopost.model.*
 import com.example.sopost.viewmodel.AuthViewModel
 import com.example.sopost.viewmodel.PostViewModel
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -76,6 +74,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
             findNavController().navigate(R.id.loginFragment)
         }
 
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,6 +82,48 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
 
 
         // If the user presses the back button, exit the app
+        val uid = FirebaseAuth.getInstance().currentUser!!.uid
+        val db = FirebaseFirestore.getInstance()
+        val likesCollection = db.collection("Likes")
+
+        val query = likesCollection
+            .orderBy("likes", Query.Direction.DESCENDING).limit(3)
+        val now = Date()
+        val formatDateForPosts =
+            SimpleDateFormat("yyyy_MM", Locale.getDefault())
+        val dateForPosts = formatDateForPosts.format(now)
+        query.get().addOnCompleteListener {
+            if (it.isComplete) {
+                if (!it.result?.isEmpty!!) {
+
+                    val topUser = it.result?.toObjects(Likes::class.java)?.get(0)
+                    if (topUser?.uid == uid) {
+
+                        if(topUser.likes != "0") {
+                            Log.i("likes", "onViewCreated: I'm Mod")
+
+                            val modCollection = db.collection("Mod")
+
+                            val user = UserMod(uid)
+                            modCollection.document(dateForPosts)
+                                .collection(uid)
+                                .document(uid).set(user)
+                        }
+                    }
+                }
+            }
+        }
+
+
+        db.collection("Mod").document(dateForPosts)
+            .collection(uid)
+            .get().addOnCompleteListener {
+                if (it.isComplete) {
+                    txtMod.isVisible = !it.result!!.isEmpty
+                }
+            }
+
+
         linearProgressHome.isVisible = false
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             val builder = AlertDialog.Builder(context)
@@ -134,8 +175,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
         val querys = postCollection
             .document(dateForPosts)
             .collection("1")
-            .orderBy("createAt", Query.Direction.DESCENDING).get().addOnCompleteListener{
-                if(it.isComplete){
+            .orderBy("createAt", Query.Direction.DESCENDING).get().addOnCompleteListener {
+                if (it.isComplete) {
                     linearProgressHome.isVisible = false
                 }
             }
@@ -165,10 +206,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
             findNavController().navigate(R.id.addPostFragment)
         }
 
-        fabFav.setOnClickListener {
+        /*fabFav.setOnClickListener {
             animateFab()
             findNavController().navigate(R.id.favFragment)
-        }
+        }*/
 
         toolbar.inflateMenu(R.menu.menu_item)
         toolbar.setOnMenuItemClickListener {
@@ -185,11 +226,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
             fab.startAnimation(rForward)
             fabAccount.startAnimation(fabClose)
             fabAddPost.startAnimation(fabClose)
-            fabFav.startAnimation(fabClose)
+            //fabFav.startAnimation(fabClose)
 
             fabAccount.isClickable = false
             fabAddPost.isClickable = false
-            fabFav.isClickable = false
+            //fabFav.isClickable = false
             isOpen = false
 
         } else {
@@ -197,11 +238,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), IPostAdapter {
             fab.startAnimation(rBackward)
             fabAccount.startAnimation(fabOpen)
             fabAddPost.startAnimation(fabOpen)
-            fabFav.startAnimation(fabOpen)
+            //fabFav.startAnimation(fabOpen)
 
             fabAccount.isClickable = true
             fabAddPost.isClickable = true
-            fabFav.isClickable = true
+            //fabFav.isClickable = true
             isOpen = true
 
         }

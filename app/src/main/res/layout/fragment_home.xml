@@ -58,6 +58,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolBack" />
 
+        <TextView
+            android:id="@+id/txtMod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:visibility="invisible"
+            android:textColor="@color/red"
+            android:text="You are mod for today"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/linearProgressHome"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolBack" />
+
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/linearProgressHome"
             android:layout_width="0dp"
@@ -99,19 +113,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="90dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="90dp"
         android:src="@drawable/ic_baseline_person_24"
-        android:visibility="invisible" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabFav"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="90dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_baseline_favorite_24"
         android:visibility="invisible" />
 
 
@@ -120,8 +124,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="90dp"
+        android:layout_marginEnd="90dp"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/ic_baseline_cloud_upload_24"
         android:visibility="invisible" />
 
